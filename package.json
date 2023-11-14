@@ -1,0 +1,20 @@
+{
+  "name": "volunteer",
+  "version": "1.0.0",
+  "description": "RESTful API for a system to connect volunteers and volunteering opportunities",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "dev": "cross-env NODE_ENV=development nodemon server.js",
+    "prod": "cross-env NODE_ENV=development nodemon server.js"
+  },
+  "author": "Haddar Beiser",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
