@@ -1,7 +1,11 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const mongoSanitize = require('mongo-sanitize');
+const mongoSanitize = require('express-mongo-sanitize');
+
+const AppError = require('./utils/AppError');
+const globalErrorHandler = require('./controllers/errorController');
+
 const app = express();
 //Parse incoming request, but limit their size:
 app.use(express.json({ limit: '10kb' }));
@@ -18,5 +22,15 @@ app.use('/api', limiter);
 app.use(helmet());
 //Data sanitization against noSQL query injection:
 app.use(mongoSanitize());
+
+//R O U T E R S
+
+//Unimplemented routes:
+app.all('*', (req, res, next) =>
+  next(new AppError(`Cannot find ${req.originalUrl}`, 404)),
+);
+
+//E R R O R   H A N D L E R
+app.use(globalErrorHandler);
 
 module.exports = app;

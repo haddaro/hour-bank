@@ -24,5 +24,8 @@
     "prefer-destructuring": ["error", { "object": true, "array": false }],
     "prefer-object-spread": "off",
     "no-unused-vars": ["error", { "argsIgnorePattern": "req|res|next|val" }]
+  },
+  "parserOptions": {
+    "ecmaVersion": 2020
   }
 }
