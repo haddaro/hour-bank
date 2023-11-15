@@ -89,6 +89,18 @@ userSchema.methods.correctPassword = catchAsync(
   async (enteredPassword, savedPassword) =>
     await bcrypt.compare(enteredPassword, savedPassword),
 );
-
 const User = mongoose.model('User', userSchema);
 module.exports = User;
+
+//Check time of password change:
+//"function" because we need the "this" keyword
+userSchema.method.passwordChangedAfter = function (JWTExpiration) {
+  if (this.changedPassWordAt) {
+    const passwordChange = parseInt(
+      this.changedPassWordAt.getTime() / 1000,
+      10,
+    );
+    return passwordChange > JWTExpiration;
+  }
+  return false;
+};

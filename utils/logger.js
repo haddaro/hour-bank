@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const fs = require('fs').promises; // eslint-disable-line
 
 const log = async (message) => {
   const now = new Date();
@@ -6,7 +6,7 @@ const log = async (message) => {
   try {
     await fs.appendFile(`${__dirname}/logs.txt`, content, 'utf-8');
   } catch (err) {
-    console.log(err);
+    console.log(err); // eslint-disable-line
   }
 };
 

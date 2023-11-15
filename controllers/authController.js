@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const log = require('../utils/logger');
@@ -47,4 +48,26 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!(await user.correctPassword(password, user.password)))
     return next(new AppError('Check out the forgot-my-password route', 400));
   createAndSendToken(user, 201, res, next);
+});
+
+//Verify that a user is logged-in and find who that is:
+exports.protect = catchAsync(async (req, res, next) => {
+  //Parse the request's header to get the authorization's bearer token:
+  let token;
+  if (req.headers.authorization?.startsWith('Bearer'))
+    //Then the token is the second 'word' after Bearer:
+    token = req.headers.authorization.split(' ')[1];
+  if (!token) return next(new AppError('Please sign in', 401));
+  //Work with a version of jwt.verify that returns a promise:.
+  const verify = promisify(jwt.verify);
+  //Check that the token is ours and that it has not expired:
+  const decoded = await verify(token, process.env.JWT_SECRET);
+  //Check if the user was not deleted after issuing the token:
+  const user = await User.findById(decoded.id);
+  //Check if the user did not change password after issuing the token:
+  if (user.passwordChangedAfter(decoded.exp))
+    return next(new AppError('Please sign in again', 401));
+  //Write user info on the request:
+  req.user = user;
+  next();
 });
