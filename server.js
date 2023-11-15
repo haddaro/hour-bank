@@ -19,4 +19,5 @@ const connectToDatabase = async () => {
 connectToDatabase();
 
 const port = parseInt(process.env.PORT, 10) || 3000;
-app.listen(port);
+
+app.listen(port, () => console.log(`running on port ${port}`));

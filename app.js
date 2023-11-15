@@ -2,6 +2,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
+const userRouter = require('./routes/userRoute');
 
 const AppError = require('./utils/AppError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -24,7 +25,7 @@ app.use(helmet());
 app.use(mongoSanitize());
 
 //R O U T E R S
-
+app.use('/api/v1/users', userRouter);
 //Unimplemented routes:
 app.all('*', (req, res, next) =>
   next(new AppError(`Cannot find ${req.originalUrl}`, 404)),

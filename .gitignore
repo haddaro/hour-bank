@@ -1,2 +1,5 @@
 # Environment config
 config.env
+
+#Log
+/utils/logs.txt
