@@ -5,6 +5,7 @@ const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 
 const WORK_FACTOR = 12;
+
 const FIELDS = [
   'tech',
   'education',
