@@ -2,10 +2,26 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const User = require('../models/userModel');
 const Order = require('../models/orderModel');
+const factory = require('./handlerFactory');
 
 const sendEmail = (to, what, message) => {
   console.log(`will send a '${what}' email to ${to} saying: ${message}`);
 }; //-------implement------
+
+exports.getOrder = factory.getDocument({
+  Model: Order,
+  populateOptions: [
+    {
+      path: 'from',
+      select: 'name email',
+    },
+    {
+      path: 'to',
+      select: 'name email',
+    },
+  ],
+});
+exports.getAllOrders = factory.getAllDocuments(Order);
 
 exports.sendOrder = catchAsync(async (req, res, next) => {
   //Get the "from" from the logged-in user and check if they have credit:

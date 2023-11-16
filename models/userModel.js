@@ -16,52 +16,69 @@ const FIELDS = [
   'home-maintenance',
 ];
 //S C H E M A:
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'please provide name'],
-  },
-  email: {
-    type: String,
-    required: [true, 'please provide e-mail'],
-    unique: true,
-    validate: [validator.isEmail, 'Please provide a valid e-mail'],
-  },
-  password: {
-    type: String,
-    minlength: [8, 'Password must be at least 8 characters'],
-    //make it not show up in a query:
-    select: false,
-  },
-  passwordConfirm: {
-    type: String,
-    //A validator to check if the two passwords on 'save' are the same:
-    validate: function (password) {
-      return password === this.password;
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'please provide name'],
     },
-    message: 'passwords do not match',
-  },
-  passwordChangedAt: Date,
-  active: { type: Boolean, default: true },
-  field: {
-    type: [String],
-    enum: {
-      values: FIELDS,
-      message: `Please choose from: ${FIELDS.join(' ')}`,
+    email: {
+      type: String,
+      required: [true, 'please provide e-mail'],
+      unique: true,
+      validate: [validator.isEmail, 'Please provide a valid e-mail'],
     },
-  },
-  subfield: String,
-  bio: String,
-  /* -----implement reviews with parent referencing----- */
-  role: {
-    type: String,
-    enum: {
-      values: ['user', 'admin'],
-      message: 'role is either user or admin',
+    password: {
+      type: String,
+      minlength: [8, 'Password must be at least 8 characters'],
+      //make it not show up in a query:
+      select: false,
     },
-    default: 'user',
+    passwordConfirm: {
+      type: String,
+      //A validator to check if the two passwords on 'save' are the same:
+      validate: function (password) {
+        return password === this.password;
+      },
+      message: 'passwords do not match',
+    },
+    passwordChangedAt: Date,
+    active: { type: Boolean, default: true },
+    field: {
+      type: [String],
+      enum: {
+        values: FIELDS,
+        message: `Please choose from: ${FIELDS.join(' ')}`,
+      },
+    },
+    subfield: String,
+    bio: String,
+    /* -----implement reviews with parent referencing----- */
+    role: {
+      type: String,
+      enum: {
+        values: ['user', 'admin'],
+        message: 'role is either user or admin',
+      },
+      default: 'user',
+    },
+    credit: { type: Number, default: 0 },
   },
-  credit: { type: Number, default: 0 },
+  { toJSON: { virtuals: true } },
+  { toObject: { virtuals: true } },
+);
+
+//V I R TU A L S
+userSchema.virtual('sentOrders', {
+  ref: 'Order',
+  foreignField: 'from',
+  localField: '_id',
+});
+
+userSchema.virtual('receivedOrders', {
+  ref: 'Order',
+  foreignField: 'to',
+  localField: '_id',
 });
 
 //M I D D L E W A R E S
