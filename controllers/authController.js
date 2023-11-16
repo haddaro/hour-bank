@@ -34,7 +34,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     return next(new AppError('Could not sign up', 400));
   }
   const user = await User.create(req.body);
-  //Log user in:
   createAndSendToken(user, 201, res, next);
 });
 
@@ -44,9 +43,8 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!email || !password)
     return next(new AppError('Please log in with e-mail and password', 400));
   const user = await User.findOne({ email }).select('+password');
-  if (!user) return next(new AppError('User not found', 400));
-  if (!(await user.correctPassword(password, user.password)))
-    return next(new AppError('Check out the forgot-my-password route', 400));
+  if (!user || !(await user.correctPassword(password, user.password)))
+    return next(new AppError('Incorrect email or password', 400));
   createAndSendToken(user, 201, res, next);
 });
 
