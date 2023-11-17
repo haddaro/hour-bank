@@ -25,14 +25,18 @@ const createAndSendToken = (user, statusCode, res, next) => {
   res.status(statusCode).json({ status: 'success', token, data: { user } });
 };
 
-//Sign-up
-exports.signup = catchAsync(async (req, res, next) => {
-  //Catch criminals:
+exports.catchInjection = catchAsync(async (req, res, next) => {
   if (req.body.role || req.body.credit) {
     const ip = req.connection.remoteAddress;
     await log(`malicious ip: ${ip}`);
-    return next(new AppError('Could not sign up', 400));
+    return next(new AppError('Could not proceed', 400));
   }
+  next();
+});
+
+//Sign-up
+exports.signup = catchAsync(async (req, res, next) => {
+  //------put catch injection in rout -------/
   const user = await User.create(req.body);
   createAndSendToken(user, 201, res, next);
 });

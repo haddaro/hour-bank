@@ -33,6 +33,7 @@ exports.getDocument = ({ Model, populateOptions }) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
     if (populateOptions) query = query.populate(populateOptions);
+    console.log(`populateOptions: ${JSON.stringify(populateOptions, null, 2)}`);
     const document = await query;
     if (!document) {
       return next(new AppError('No document found with this id', 404));

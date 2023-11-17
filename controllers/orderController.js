@@ -8,9 +8,16 @@ const log = require('../utils/logger');
 
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
+const filterOrder = (order) => {
+  const { _id, orderStatus, from, to, sendDate } = order;
+  const filteredFrom = { _id: from._id, name: from.name };
+  const filteredTo = { _id: to._id, name: to.name };
+  return { _id, sendDate, orderStatus, from: filteredFrom, to: filteredTo };
+};
+
 const sendEmail = (to, what, message) => {
   console.log(`will send a '${what}' email to ${to} saying: ${message}`);
-}; //-------implement------
+}; //-------implement in utils------
 
 exports.getOrder = factory.getDocument({
   Model: Order,
@@ -37,18 +44,19 @@ exports.sendOrder = catchAsync(async (req, res, next) => {
   const order = await Order.create({ from, to });
   //email the "to" with approval/rejection instructions
   const message =
-    req.body.text || `${from.name} wants to book an hour of service.`;
+    req.body.message || `${from.name} wants to book an hour of service.`;
   await sendEmail(to.email, 'send', message);
   //send response:
-  res.status(201).json({ status: 'success', data: order });
+  const filteredOrder = filterOrder(order);
+  res.status(201).json({ status: 'success', data: { order: filteredOrder } });
 });
 
 exports.approveOrder = catchAsync(async (req, res, next) => {
-  const loggedUserId = req.user._id;
+  const to = req.user._id;
   let order = await Order.findById(req.params.id);
   if (
     !order ||
-    order.to.toString() !== loggedUserId.toString() ||
+    order.to._id.toString() !== to.toString() ||
     order.orderStatus !== 'pending-approval'
   )
     return next(new AppError(`You cannot approve order`, 401));
@@ -59,36 +67,39 @@ exports.approveOrder = catchAsync(async (req, res, next) => {
     req.body.message ||
     `${order.to.name} has agreed to sell you an hour of service.`;
   await sendEmail(order.to.email, 'approve', message);
-  res.status(200).json({ status: 'success', data: order });
+  const filteredOrder = filterOrder(order);
+  res.status(200).json({ status: 'success', data: { order: filteredOrder } });
 });
 
 exports.rejectOrder = catchAsync(async (req, res, next) => {
-  const loggedUserId = req.user._id;
+  const to = req.user._id;
   let order = await Order.findById(req.params.id);
   if (
     !order ||
-    order.to.toString() !== loggedUserId.toString() ||
+    order.to._id.toString() !== to.toString() ||
     order.orderStatus !== 'pending-approval'
   )
-    return next(new AppError(`You cannot reject this order`, 401));
-  order.orderStatus = 'canceled';
-  order.rejectDate = Date.now();
+    return next(new AppError(`You cannot reject order`, 401));
+  order.orderStatus = 'cancelled';
+  order.approveDate = Date.now();
   order = await order.save();
   const message =
     req.body.message ||
-    `${order.to.name} cannot sell you an hour for the time being.`;
+    `${order.from.name} cannot sell you an hour for the time being.`;
   await sendEmail(order.to.email, 'reject', message);
-  res.status(200).json({ status: 'success', data: order });
+  const filteredOrder = filterOrder(order);
+  res.status(200).json({ status: 'success', data: { order: filteredOrder } });
 });
 
 exports.makeTransaction = catchAsync(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
   const from = await User.findById(req.user._id);
   const to = await User.findById(order.to);
+
   if (
     !to ||
     order.orderStatus !== 'pending-transaction' ||
-    from._id.toString() !== order.from.toString()
+    from._id.toString() !== order.from._id.toString()
   )
     return next(new AppError('Cannot make transaction'), 400);
   if (order?.approveDate.getTime() > Date.now() + WEEK) {
@@ -113,6 +124,8 @@ exports.makeTransaction = catchAsync(async (req, res, next) => {
       { session },
     );
     await session.commitTransaction();
+    const filteredOrder = filterOrder(order);
+    res.status(200).json({ status: 'success', data: { order: filteredOrder } });
   } catch (err) {
     await session.abortTransaction();
     const now = Date.now();

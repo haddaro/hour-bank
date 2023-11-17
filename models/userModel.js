@@ -53,6 +53,8 @@ const userSchema = new mongoose.Schema(
     },
     subfield: String,
     bio: String,
+    city: String,
+    remote: Boolean,
     /* -----implement reviews with parent referencing----- */
     role: {
       type: String,
@@ -109,7 +111,7 @@ userSchema.methods.correctPassword = catchAsync(
 );
 //Check time of password change:
 //"function" because we need the "this" keyword
-userSchema.method.passwordChangedAfter = function (JWTExpiration) {
+userSchema.methods.passwordChangedAfter = function (JWTExpiration) {
   if (this.changedPassWordAt) {
     const passwordChange = parseInt(
       this.changedPassWordAt.getTime() / 1000,
