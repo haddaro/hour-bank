@@ -18,8 +18,8 @@ exports.getUser = factory.getDocument({
   ],
 });
 exports.getAllUsers = factory.getAllDocuments(User);
-
 exports.updateUser = factory.updateDocument(User);
+exports.deleteUser = factory.deleteDocument(User);
 
 exports.getMe = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user._id);
@@ -34,6 +34,11 @@ exports.updateMe = catchAsync(async (req, res, next) => {
         401,
       ),
     );
-  const user = User.findByIdAndUpdate(req.body);
-  res(201).json({ status: 'success', data: { user } });
+  const user = await User.findByIdAndUpdate(req.user._id, req.body);
+  res.status(201).json({ status: 'success', data: { user } });
+});
+
+exports.deactivateMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user._id, { active: false });
+  res.status(200).json({ status: 'success', data: null });
 });

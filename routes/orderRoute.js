@@ -19,6 +19,10 @@ router.patch(
   orderController.makeTransaction,
 );
 router.route('/').get(orderController.getAllOrders);
-router.route('/:id').get(orderController.getOrder);
+router
+  .route('/:id')
+  .get(orderController.getOrder)
+  .patch(orderController.updateOrder)
+  .delete(orderController.deleteOrder);
 
 module.exports = router;

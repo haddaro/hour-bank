@@ -33,12 +33,16 @@ exports.getOrder = factory.getDocument({
   ],
 });
 exports.getAllOrders = factory.getAllDocuments(Order);
+exports.updateOrder = factory.updateDocument(Order);
+exports.deleteOrder = factory.deleteDocument(Order);
 
 exports.sendOrder = catchAsync(async (req, res, next) => {
   const from = await User.findById(req.user._id);
   const to = await User.findById(req.params.id);
   if (!from || !to)
     return next(new AppError('Could not proceed with the order', 400));
+  if (from._id.toString() === to._id.toString())
+    return next(new AppError('You cannot send an order to yourself', 400));
   if (from.credit < 1)
     return next(new AppError('Not enough credit to make the order', 400));
   const order = await Order.create({ from, to });

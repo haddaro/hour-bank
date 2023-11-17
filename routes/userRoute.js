@@ -4,12 +4,24 @@ const authController = require('../controllers/authController');
 const orderController = require('../controllers/orderController');
 
 const router = express.Router();
+
+router
+  .route('/me')
+  .get(authController.protect, userController.getMe)
+  .patch(
+    authController.protect,
+    authController.catchInjection,
+    userController.updateMe,
+  )
+  .delete(authController.protect, userController.deactivateMe);
+
 //-------implement restrictTo--------
 router.route('/').get(userController.getAllUsers);
 router
   .route('/:id')
   .get(userController.getUser)
-  .patch(userController.updateUser);
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 router.post('/signup', authController.signup);
 router.post('/login', authController.catchInjection, authController.login);
 router.post(
@@ -17,13 +29,5 @@ router.post(
   authController.protect,
   orderController.sendOrder,
 );
-
-router
-  .route('/me')
-  .patch(
-    authController.protect,
-    authController.catchInjection,
-    userController.updateMe,
-  );
 
 module.exports = router;
