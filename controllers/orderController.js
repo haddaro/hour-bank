@@ -5,6 +5,7 @@ const User = require('../models/userModel');
 const Order = require('../models/orderModel');
 const factory = require('./handlerFactory');
 const log = require('../utils/logger');
+const sendEmail = require('../utils/email');
 
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
@@ -14,10 +15,6 @@ const filterOrder = (order) => {
   const filteredTo = { _id: to._id, name: to.name };
   return { _id, sendDate, orderStatus, from: filteredFrom, to: filteredTo };
 };
-
-const sendEmail = (to, what, message) => {
-  console.log(`will send a '${what}' email to ${to} saying: ${message}`);
-}; //-------implement in utils------
 
 exports.getOrder = factory.getDocument({
   Model: Order,
