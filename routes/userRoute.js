@@ -25,7 +25,7 @@ router
 router.post('/signup', authController.signup);
 router.post('/login', authController.catchInjection, authController.login);
 router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password/:token', authController.forgotPassword);
+router.patch('/reset-password/:token', authController.resetPassword);
 router.post(
   '/order-hour/:id',
   authController.protect,

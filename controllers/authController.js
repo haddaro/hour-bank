@@ -1,13 +1,13 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('../models/userModel');
 const log = require('../utils/logger');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
-const app = require('../app');
 
-const version = process.env.VERSION;
+const version = 'v1';
 
 //Create a JWT and send to the user via cookie:
 const createAndSendToken = (user, statusCode, res, next) => {
@@ -79,10 +79,10 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-  const user = User.findOne({ email: req.body.email });
+  const user = await User.findOne({ email: req.body.email });
   if (!user) return next(new AppError('User not found', 404));
   //Generate a reset token:
-  const resetToken = user.CreatePasswordResetToken();
+  const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
   const resetURL = `${req.protocol}://${req.get(
     'host',
@@ -106,5 +106,20 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
+  const encryptedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+  const user = await User.findOne({
+    passwordResetToken: encryptedToken,
+    passwordResetExpires: { $gte: Date.now() },
+  });
+  if (!user)
+    return next(new AppError('User not found or reset token expired', 400));
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
   createAndSendToken(user, 200, res, next);
 });

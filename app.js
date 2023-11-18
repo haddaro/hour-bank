@@ -8,7 +8,7 @@ const orderRouter = require('./routes/orderRoute');
 const AppError = require('./utils/AppError');
 const globalErrorHandler = require('./controllers/errorController');
 
-const version = process.env.VERSION;
+const version = 'v1';
 
 const app = express();
 //Parse incoming request, but limit their size:

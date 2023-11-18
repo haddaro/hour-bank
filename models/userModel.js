@@ -99,7 +99,9 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   //If the password is modified on an existing document, update the time
   //and subtract a second because the jwt might be issued before the save:
-  if (!this.isNew) this.changedPassWordAt = Date.now() - 1000;
+  if (!this.isNew) {
+    this.passwordChangedAt = Date.now() - 1000;
+  }
   next();
 });
 
@@ -134,7 +136,7 @@ userSchema.methods.createPasswordResetToken = function () {
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
-  this.passwordExpires = Date.now() + RESET_EXPIRATION_TIME;
+  this.passwordResetExpires = Date.now() + RESET_EXPIRATION_TIME;
   return resetToken;
 };
 
