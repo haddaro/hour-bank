@@ -4,6 +4,9 @@ const authController = require('../controllers/authController');
 
 const router = express.Router({ mergeParams: true });
 
-router.route('/').post(authController.protect, reviewController.createReview);
+router
+  .route('/')
+  .post(authController.protect, reviewController.createReview)
+  .get(reviewController.getAllReviews);
 
 module.exports = router;
