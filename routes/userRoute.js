@@ -24,6 +24,7 @@ router
   .delete(userController.deleteUser);
 router.post('/signup', authController.signup);
 router.post('/login', authController.catchInjection, authController.login);
+router.post('/forgot-password', authController.forgotPassword);
 router.post(
   '/order-hour/:id',
   authController.protect,

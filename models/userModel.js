@@ -3,6 +3,8 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
+const Order = require('./orderModel');
+const Review = require('./reviewModel');
 
 const WORK_FACTOR = 12;
 
@@ -120,6 +122,22 @@ userSchema.methods.passwordChangedAfter = function (JWTExpiration) {
     return passwordChange > JWTExpiration;
   }
   return false;
+};
+
+userSchema.methods.CompletedOrderTo = async function (toId) {
+  const orders = await Order.find({
+    from: this._id,
+    orderStatus: 'complete',
+  }).select('to -id');
+  return orders.some((order) => order.to._id.toString() === toId.toString());
+};
+userSchema.methods.wroteReviewOn = async function (subjectId) {
+  const reviews = await Review.find({
+    author: this._id,
+  }).select('subject -id');
+  return reviews.some(
+    (review) => review.subject._id.toString() === subjectId.toString(),
+  );
 };
 
 const User = mongoose.model('User', userSchema);

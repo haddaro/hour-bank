@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 const log = require('../utils/logger');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
+const sendEmail = require('../utils/email');
 
 //Create a JWT and send to the user via cookie:
 const createAndSendToken = (user, statusCode, res, next) => {
@@ -72,4 +73,13 @@ exports.protect = catchAsync(async (req, res, next) => {
   //Write user info on the request:
   req.user = user;
   next();
+});
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  const user = User.findOne({ email: req.body.email });
+  if (!user) return next(new AppError('User not found', 404));
+  //logic
+  const message = `Please`;
+  await sendEmail(user.email, 'forgot', message);
+  res.status(200).json({ status: 'success', message: 'Please check e mail' });
 });
