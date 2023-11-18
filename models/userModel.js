@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const AppError = require('../utils/AppError');
@@ -7,6 +8,7 @@ const Order = require('./orderModel');
 const Review = require('./reviewModel');
 
 const WORK_FACTOR = 12;
+const RESET_EXPIRATION_TIME = 10 * 60 * 1000;
 
 const FIELDS = [
   'tech',
@@ -67,6 +69,8 @@ const userSchema = new mongoose.Schema(
       default: 'user',
     },
     credit: { type: Number, default: 0 },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   { toJSON: { virtuals: true } },
   { toObject: { virtuals: true } },
@@ -122,6 +126,16 @@ userSchema.methods.passwordChangedAfter = function (JWTExpiration) {
     return passwordChange > JWTExpiration;
   }
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  this.passwordExpires = Date.now() + RESET_EXPIRATION_TIME;
+  return resetToken;
 };
 
 userSchema.methods.CompletedOrderTo = async function (toId) {

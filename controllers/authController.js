@@ -5,6 +5,9 @@ const log = require('../utils/logger');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
+const app = require('../app');
+
+const version = process.env.VERSION;
 
 //Create a JWT and send to the user via cookie:
 const createAndSendToken = (user, statusCode, res, next) => {
@@ -50,7 +53,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email }).select('+password');
   if (!user || !(await user.correctPassword(password, user.password)))
     return next(new AppError('Incorrect email or password', 400));
-  createAndSendToken(user, 201, res, next);
+  createAndSendToken(user, 200, res, next);
 });
 
 //Verify that a user is logged-in and find who that is:
@@ -78,8 +81,30 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   const user = User.findOne({ email: req.body.email });
   if (!user) return next(new AppError('User not found', 404));
-  //logic
-  const message = `Please`;
-  await sendEmail(user.email, 'forgot', message);
+  //Generate a reset token:
+  const resetToken = user.CreatePasswordResetToken();
+  await user.save({ validateBeforeSave: false });
+  const resetURL = `${req.protocol}://${req.get(
+    'host',
+  )}/api/${version}/users/reset-password/${resetToken}`;
+  const message = `Forgot your password?
+  Please send a PATCH request with a new password
+  and an identical passwordConfirm to ${resetURL}
+  \nDid not forget your password? Please ignore this email.`;
+  try {
+    await sendEmail(user.email, 'forgot', message);
+  } catch (err) {
+    const appError = new AppError('Could not mail token', 500);
+    user.PasswordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false }).catch(() => {
+      appError.message = appError.message.concat(' and could not delete token');
+    });
+    return next(appError);
+  }
   res.status(200).json({ status: 'success', message: 'Please check e mail' });
+});
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  createAndSendToken(user, 200, res, next);
 });

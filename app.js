@@ -8,6 +8,8 @@ const orderRouter = require('./routes/orderRoute');
 const AppError = require('./utils/AppError');
 const globalErrorHandler = require('./controllers/errorController');
 
+const version = process.env.VERSION;
+
 const app = express();
 //Parse incoming request, but limit their size:
 app.use(express.json({ limit: '10kb' }));
@@ -26,8 +28,8 @@ app.use(helmet());
 app.use(mongoSanitize());
 
 //R O U T E R S
-app.use('/api/v1/users', userRouter);
-app.use('/api/v1/orders', orderRouter);
+app.use(`/api/${version}/users`, userRouter);
+app.use(`/api/${version}/orders`, orderRouter);
 //Unimplemented routes:
 app.all('*', (req, res, next) =>
   next(new AppError(`Cannot find ${req.originalUrl}`, 404)),
