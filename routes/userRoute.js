@@ -14,22 +14,26 @@ router
     userController.updateMe,
   )
   .delete(authController.protect, userController.deactivateMe);
-
-//-------implement restrictTo--------
 router.route('/').get(userController.getAllUsers);
-router
-  .route('/:id')
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
-router.post('/signup', authController.signup);
-router.post('/login', authController.catchInjection, authController.login);
+router.post('/signup', authController.catchInjection, authController.signup);
+router.post('/login', authController.login);
+router.patch(
+  '/update-password',
+  authController.protect,
+  authController.updatePassword,
+);
 router.post('/forgot-password', authController.forgotPassword);
 router.patch('/reset-password/:token', authController.resetPassword);
+
 router.post(
   '/order-hour/:id',
   authController.protect,
   orderController.sendOrder,
 );
+router
+  .route('/:id')
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
 module.exports = router;
