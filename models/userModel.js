@@ -88,6 +88,11 @@ userSchema.virtual('receivedOrders', {
   foreignField: 'to',
   localField: '_id',
 });
+userSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'subject',
+  localField: '_id',
+});
 
 //M I D D L E W A R E S
 //Encrypt password each time it is saved

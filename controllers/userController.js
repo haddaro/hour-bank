@@ -15,6 +15,10 @@ exports.getUser = factory.getDocument({
       path: 'receivedOrders',
       select: '-to',
     },
+    {
+      path: 'reviews',
+      select: '-subject',
+    },
   ],
 });
 exports.getAllUsers = factory.getAllDocuments(User);
