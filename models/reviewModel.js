@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema(
   {
-    title: {
+    text: {
       type: String,
     },
     rating: {
@@ -25,6 +25,7 @@ reviewSchema.pre(/^find/, function (next) {
     },
     { path: 'author', select: 'name' },
   ]);
+  next();
 });
 
 const Review = mongoose.model('Review', reviewSchema);

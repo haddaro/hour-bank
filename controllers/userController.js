@@ -2,7 +2,6 @@ const User = require('../models/userModel');
 const factory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
-const log = require('../utils/logger');
 
 exports.getUser = factory.getDocument({
   Model: User,
