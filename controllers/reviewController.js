@@ -35,8 +35,8 @@ exports.createReview = catchAsync(async (req, res, next) => {
 });
 
 exports.updateReview = catchAsync(async (req, res, next) => {
-  const user = User.findById(req.user);
-  const review = Review.findById(req.params.id);
+  const user = await User.findById(req.user._id);
+  const review = await Review.findById(req.params.id);
   if (user._id.toString() !== review.author._id.toString())
     return next(
       new AppError('You cannot update a review that you did not write', 401),
@@ -44,6 +44,7 @@ exports.updateReview = catchAsync(async (req, res, next) => {
   if (req.body.text) review.text = req.body.text;
   if (req.body.rating) review.rating = req.body.rating;
   await review.save();
+  res.status(200).json({ status: 'success', data: { review } });
 });
 
 exports.getReview = factory.getDocument(Review);
