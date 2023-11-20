@@ -92,7 +92,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   and an identical passwordConfirm to ${resetURL}
   \nDid not forget your password? Please ignore this email.`;
   try {
-    await sendEmail(user.email, 'forgot', message);
+    await sendEmail(user.email, 'Forgot your password?', message);
   } catch (err) {
     const appError = new AppError('Could not mail token', 500);
     user.PasswordResetToken = undefined;

@@ -7,7 +7,23 @@ const factory = require('./handlerFactory');
 const log = require('../utils/logger');
 const sendEmail = require('../utils/email');
 
+const version = `v1`;
 const WEEK = 7 * 24 * 60 * 60 * 1000;
+
+const getSentOrderMessage = (req, order) => {
+  const approveUrl = `${req.protocol}://${req.get(
+    'host',
+  )}/api/${version}/orders/approve/${order._id}`;
+  const rejectUrl = `${req.protocol}://${req.get(
+    'host',
+  )}/api/${version}/orders/reject/${order._id}`;
+  const message = `${order.from.name} wants to book an hour of service. ${
+    req.body.message ? `Personal message: ${req.body.message}` : ''
+  }`;
+  return `${message}
+  To approve, send a PATCH request to: ${approveUrl}
+  To reject, send a PATCH request to ${rejectUrl}`;
+};
 
 const filterOrder = (order) => {
   const { _id, orderStatus, from, to, sendDate } = order;
@@ -43,10 +59,8 @@ exports.sendOrder = catchAsync(async (req, res, next) => {
   if (from.credit < 1)
     return next(new AppError('Not enough credit to make the order', 400));
   const order = await Order.create({ from, to });
-  //email the "to" with approval/rejection instructions
-  const message =
-    req.body.message || `${from.name} wants to book an hour of service.`;
-  await sendEmail(to.email, 'send', message);
+  const message = getSentOrderMessage(req, order);
+  await sendEmail(to.email, 'You received an order', message);
   //send response:
   const filteredOrder = filterOrder(order);
   res.status(201).json({ status: 'success', data: { order: filteredOrder } });
@@ -64,10 +78,12 @@ exports.approveOrder = catchAsync(async (req, res, next) => {
   order.orderStatus = 'pending-transaction';
   order.approveDate = Date.now();
   order = await order.save();
-  const message =
-    req.body.message ||
-    `${order.to.name} has agreed to sell you an hour of service.`;
-  await sendEmail(order.to.email, 'approve', message);
+  const message = `${
+    order.to.name
+  } has agreed to sell you an hour of service. ${
+    req.body.message ? `Personal message: ${req.body.message}` : ''
+  }`;
+  await sendEmail(order.from.email, 'Your order was approved', message);
   const filteredOrder = filterOrder(order);
   res.status(200).json({ status: 'success', data: { order: filteredOrder } });
 });
@@ -84,10 +100,10 @@ exports.rejectOrder = catchAsync(async (req, res, next) => {
   order.orderStatus = 'cancelled';
   order.approveDate = Date.now();
   order = await order.save();
-  const message =
-    req.body.message ||
-    `${order.from.name} cannot sell you an hour for the time being.`;
-  await sendEmail(order.to.email, 'reject', message);
+  const message = `${order.to.name} cannot sell you an hour of service. ${
+    req.body.message ? `Personal message: ${req.body.message}` : ''
+  }`;
+  await sendEmail(order.from.email, 'Your order cannot be fulfilled', message);
   const filteredOrder = filterOrder(order);
   res.status(200).json({ status: 'success', data: { order: filteredOrder } });
 });
