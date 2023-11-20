@@ -33,8 +33,16 @@ router.post(
 router
   .route('/:id')
   .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+  .patch(
+    authController.protect,
+    authController.restrictToAdmin,
+    userController.updateUser,
+  )
+  .delete(
+    authController.protect,
+    authController.restrictToAdmin,
+    userController.deleteUser,
+  );
 router.route('/').get(userController.getAllUsers);
 
 module.exports = router;

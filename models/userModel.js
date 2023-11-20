@@ -116,6 +116,12 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
+//Omit admins from queries:
+userSchema.pre(/^find/, function (next) {
+  this.find({ role: 'user' });
+  next();
+});
+
 //INSTANCE METHODS
 //Compare entered password with the one encrypted in the db:
 userSchema.methods.correctPassword = catchAsync(

@@ -8,7 +8,11 @@ router
   .route('/:id')
   .get(reviewController.getReview)
   .patch(authController.protect, reviewController.updateReview)
-  .delete(reviewController.deleteReview);
+  .delete(
+    authController.protect,
+    authController.restrictToAdmin,
+    reviewController.deleteReview,
+  );
 router
   .route('/')
   .post(authController.protect, reviewController.createReview)

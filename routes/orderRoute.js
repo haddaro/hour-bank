@@ -18,11 +18,25 @@ router.patch(
   authController.protect,
   orderController.makeTransaction,
 );
-router.route('/').get(orderController.getAllOrders);
+router
+  .route('/')
+  .get(
+    authController.protect,
+    authController.restrictToAdmin,
+    orderController.getAllOrders,
+  );
 router
   .route('/:id')
   .get(orderController.getOrder)
-  .patch(orderController.updateOrder)
-  .delete(orderController.deleteOrder);
+  .patch(
+    authController.protect,
+    authController.restrictToAdmin,
+    orderController.updateOrder,
+  )
+  .delete(
+    authController.protect,
+    authController.restrictToAdmin,
+    orderController.deleteOrder,
+  );
 
 module.exports = router;

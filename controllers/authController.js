@@ -78,6 +78,12 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+exports.restrictToAdmin = catchAsync(async (req, res, next) => {
+  if (req.user.role !== 'admin')
+    return next(new AppError('You are not authorized', 401));
+  next();
+});
+
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) return next(new AppError('User not found', 404));
