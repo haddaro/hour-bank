@@ -1,5 +1,8 @@
 # Environment config
 config.env
 
-#Log
+# Log
 /utils/logs.txt
+
+# Data
+/dev
