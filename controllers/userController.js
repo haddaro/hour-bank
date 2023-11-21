@@ -30,7 +30,7 @@ exports.getMe = catchAsync(async (req, res, next) => {
 });
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  if (req.body.password)
+  if (req.body.password || req.body.passwordConfirm)
     return next(
       new AppError(
         'Password can only be changed through change password route',

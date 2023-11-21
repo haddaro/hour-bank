@@ -1,3 +1,7 @@
+/* Router for order-related CRUD operations.
+   Most operations require authentication and some are restricted to admins.
+ */
+
 const express = require('express');
 const reviewController = require('../controllers/reviewController');
 const authController = require('../controllers/authController');
@@ -13,6 +17,7 @@ router
     authController.restrictToAdmin,
     reviewController.deleteReview,
   );
+
 router
   .route('/')
   .post(authController.protect, reviewController.createReview)
