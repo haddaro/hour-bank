@@ -1,3 +1,9 @@
+/* A collection of factory functions for CRUD operations on any model.
+   Filtering, limiting, sorting and pagination are performed through
+   through an instance of the APIfeatures class.
+   Exceptions are caught in the wrapper catchAsync function,
+   that leads to the global error-handling middleware.
+*/
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const APIFeatures = require('../utils/APIFeatures');

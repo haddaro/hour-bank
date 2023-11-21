@@ -1,3 +1,5 @@
+// Handles the logging of given messages to a file, for administration purposes.
+
 const fs = require('fs').promises; // eslint-disable-line
 
 const log = async (message) => {

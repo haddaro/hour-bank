@@ -1,10 +1,12 @@
+/* Handles the sending of e-mails through nodemailer,
+   from host, port, user and password specified in environment variables.
+*/
 const nodemailer = require('nodemailer');
 
 const FROM_NAME = 'Hour-Bank';
 const FROM_EMAIL = 'admin@hour-bank.com';
 
 const handleEmail = async (mailOptions) => {
-  //create a nodemailer transporter:
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: parseInt(process.env.EMAIL_PORT, 10),
@@ -12,7 +14,6 @@ const handleEmail = async (mailOptions) => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD,
     },
-    //Send mail via transporter with the options accepted as parameter:
   });
   await transporter.sendMail(mailOptions);
 };

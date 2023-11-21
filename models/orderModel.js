@@ -22,6 +22,7 @@ const orderSchema = new mongoose.Schema({
   transactionDate: Date,
 });
 
+// A query middleware to populate an order document with its sender and receiver.
 orderSchema.pre(/^find/, function (next) {
   this.find().populate([
     {

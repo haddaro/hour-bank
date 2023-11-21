@@ -17,6 +17,7 @@ const reviewSchema = new mongoose.Schema(
   { toObject: { virtuals: true } },
 );
 
+// A query middleware to populate a review document with its author and subject.
 reviewSchema.pre(/^find/, function (next) {
   this.find().populate([
     {

@@ -1,3 +1,8 @@
+/* A controller for user-related operations.
+   Except for operations that require authorization and authentication.
+   Exceptions are caught in the wrapper catchAsync function,
+   that leads to the global error-handling middleware.
+ */
 const User = require('../models/userModel');
 const factory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');

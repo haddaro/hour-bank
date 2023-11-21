@@ -52,7 +52,7 @@ const getApprovedOrderMessage = (req, order) => {
   To make a transaction, send a PATCH request to: ${transactUrl}`;
 };
 
-// Returns a copy of the parameter order, without its sensitive data
+// Returns a copy of the parameter order, without its sensitive data.
 const filterOrder = (order) => {
   const { _id, orderStatus, from, to, sendDate } = order;
   const filteredFrom = { _id: from._id, name: from.name };
@@ -177,7 +177,7 @@ exports.makeTransaction = catchAsync(async (req, res, next) => {
   }
 });
 
-// CRUD operations, using factory functions:
+// CRUD operations, using factory functions.
 exports.getOrder = factory.getDocument({
   Model: Order,
   populateOptions: [

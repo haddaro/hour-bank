@@ -19,7 +19,7 @@ const FIELDS = [
   'babysitting',
   'home-maintenance',
 ];
-//S C H E M A:
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -35,12 +35,10 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       minlength: [8, 'Password must be at least 8 characters'],
-      //make it not show up in a query:
       select: false,
     },
     passwordConfirm: {
       type: String,
-      //A validator to check if the two passwords on 'save' are the same:
       validate: function (password) {
         return password === this.password;
       },
@@ -59,7 +57,6 @@ const userSchema = new mongoose.Schema(
     bio: String,
     city: String,
     remote: Boolean,
-    /* -----implement reviews with parent referencing----- */
     role: {
       type: String,
       enum: {
@@ -76,7 +73,6 @@ const userSchema = new mongoose.Schema(
   { toObject: { virtuals: true } },
 );
 
-//V I R TU A L S
 userSchema.virtual('sentOrders', {
   ref: 'Order',
   foreignField: 'from',
@@ -88,49 +84,45 @@ userSchema.virtual('receivedOrders', {
   foreignField: 'to',
   localField: '_id',
 });
+
 userSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'subject',
   localField: '_id',
 });
 
-//M I D D L E W A R E S
-//Encrypt password each time it is saved
+//Encrypts password each time it is saved
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, WORK_FACTOR).catch((err) => {
     next(new AppError(err.message, 500));
   });
   this.passwordConfirm = undefined;
-  //If the password is modified on an existing document, update the time
-  //and subtract a second because the jwt might be issued before the save:
   if (!this.isNew) {
     this.passwordChangedAt = Date.now() - 1000;
   }
   next();
 });
 
-//Omit inactive users from any query that starts with find:
+//Omits deactivated users from queries.
 userSchema.pre(/^find/, function (next) {
   this.find({ active: true });
   next();
 });
-/*
-//Omit admins from queries:
+
+//Omits admins from queries.
 userSchema.pre(/^find/, function (next) {
   this.find({ role: 'user' });
   next();
 });
-*/
 
-//INSTANCE METHODS
-//Compare entered password with the one encrypted in the db:
+//Compares entered password with the one encrypted in the db:
 userSchema.methods.correctPassword = catchAsync(
   async (enteredPassword, savedPassword) =>
     await bcrypt.compare(enteredPassword, savedPassword),
 );
-//Check time of password change:
-//"function" because we need the "this" keyword
+
+// Checks whether the user's password was changed after the given time.
 userSchema.methods.passwordChangedAfter = function (JWTExpiration) {
   if (this.changedPassWordAt) {
     const passwordChange = parseInt(
@@ -142,6 +134,9 @@ userSchema.methods.passwordChangedAfter = function (JWTExpiration) {
   return false;
 };
 
+/* Signs a temporary token to allow users who forgot their password
+   to reset it
+*/
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
   this.passwordResetToken = crypto
@@ -152,6 +147,9 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
+/* Checks whether the 'this' user has completed a transaction
+   to a specified user.
+*/
 userSchema.methods.completedOrderTo = async function (toId) {
   const orders = await Order.find({
     from: this._id,
@@ -160,6 +158,9 @@ userSchema.methods.completedOrderTo = async function (toId) {
   return orders.some((order) => order.to._id.toString() === toId.toString());
 };
 
+/* Checks whether the 'this' user has already written a review
+   on a specified user.
+*/
 userSchema.methods.wroteReviewOn = async function (subjectId) {
   const reviews = await Review.find({
     author: this._id,
