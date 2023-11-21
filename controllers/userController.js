@@ -8,29 +8,33 @@ const factory = require('./handlerFactory');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 
+const populateOptions = [
+  {
+    path: 'sentOrders',
+    select: '-from',
+  },
+  {
+    path: 'receivedOrders',
+    select: '-to',
+  },
+  {
+    path: 'reviews',
+    select: '-subject',
+  },
+];
+
 exports.getUser = factory.getDocument({
   Model: User,
-  populateOptions: [
-    {
-      path: 'sentOrders',
-      select: '-from',
-    },
-    {
-      path: 'receivedOrders',
-      select: '-to',
-    },
-    {
-      path: 'reviews',
-      select: '-subject',
-    },
-  ],
+  populateOptions,
 });
 exports.getAllUsers = factory.getAllDocuments(User);
 exports.updateUser = factory.updateDocument(User);
 exports.deleteUser = factory.deleteDocument(User);
 
 exports.getMe = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
+  let query = await User.findById(req.user._id);
+  query = query.populate(populateOptions);
+  const user = await query;
   res.status(200).json({ status: 'success', data: { user } });
 });
 

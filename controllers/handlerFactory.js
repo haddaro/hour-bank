@@ -28,13 +28,6 @@ exports.updateDocument = (Model) =>
     res.status(200).json({ status: 'success', data: { data: document } });
   });
 
-exports.createDocument = (Model) =>
-  catchAsync(async (req, res, next) => {
-    const document = await Model.create(req.body); //only possible because in app we have:
-    //app.use(express.json()); middleware!
-    res.status(201).json({ status: 'success', data: { data: document } });
-  });
-
 exports.getDocument = ({ Model, populateOptions }) =>
   catchAsync(async (req, res, next) => {
     let query = Model.findById(req.params.id);
