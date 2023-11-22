@@ -6,6 +6,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
+const compression = require('compression');
 const userRouter = require('./routes/userRoute');
 const orderRouter = require('./routes/orderRoute');
 const reviewRouter = require('./routes/reviewRoute');
@@ -48,6 +49,9 @@ app.use(`/api/${version}/reviews`, reviewRouter);
 app.all('*', (req, res, next) =>
   next(new AppError(`Cannot find ${req.originalUrl}`, 404)),
 );
+
+// Compress text responses:
+app.use(compression());
 
 // Global error-handling middleWare:
 app.use(globalErrorHandler);
