@@ -1,5 +1,5 @@
 # hour-bank
-and API for a barter service
+REST API for a barter service
 
 
 postman documentation:
