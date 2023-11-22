@@ -25,5 +25,8 @@ module.exports = async (receiver, subjectLine, message) => {
     subject: subjectLine,
     text: message,
   };
+  console.log(
+    `Sending an email. from: ${FROM_NAME}, ${FROM_EMAIL} \nto: ${receiver} \nsubject: ${subjectLine} \ncontent: ${message}`,
+  );
   await handleEmail(mailOptions);
 };
