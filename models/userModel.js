@@ -65,7 +65,7 @@ const userSchema = new mongoose.Schema(
       },
       default: 'user',
     },
-    credit: { type: Number, default: 0 },
+    credit: { type: Number, default: 5 },
     passwordResetToken: String,
     passwordResetExpires: Date,
   },
