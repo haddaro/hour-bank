@@ -14,6 +14,8 @@ const reviewRouter = require('./reviewRoute');
 const router = express.Router();
 router.use('/:id/reviews', reviewRouter);
 
+router.get('/test', (req, res) => res.send('user Test route works!'));
+
 router
   .route('/me')
   .get(authController.protect, userController.getMe)
