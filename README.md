@@ -20,4 +20,4 @@ MongoDB: NoSQL database for storing data.
 Mongoose: MongoDB object modeling for Node.js.
 
 * DB data is fictional.
-* E-mails are directed to my mailtrap.
+* E-mails are directed to my mailtrap and their content logged to the console.
