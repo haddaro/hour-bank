@@ -18,3 +18,6 @@ Node.js: For building the backend application.
 Express: Web application framework for Node.js.
 MongoDB: NoSQL database for storing data.
 Mongoose: MongoDB object modeling for Node.js.
+
+* DB data is fictional.
+* E-mails are directed to my mailtrap.
