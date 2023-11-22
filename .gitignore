@@ -6,3 +6,6 @@ config.env
 
 # Data
 /dev
+
+# Docs
+/docs

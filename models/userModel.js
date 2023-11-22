@@ -91,7 +91,7 @@ userSchema.virtual('reviews', {
   localField: '_id',
 });
 
-//Encrypts password each time it is saved
+//Encrypts password each time it is saved.
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, WORK_FACTOR).catch((err) => {
@@ -116,7 +116,7 @@ userSchema.pre(/^find/, function (next) {
   next();
 });
 
-//Compares entered password with the one encrypted in the db:
+//Compares entered password with the one encrypted in the db.
 userSchema.methods.correctPassword = catchAsync(
   async (enteredPassword, savedPassword) =>
     await bcrypt.compare(enteredPassword, savedPassword),
