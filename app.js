@@ -45,6 +45,9 @@ app.use(`/api/${version}/users`, userRouter);
 app.use(`/api/${version}/orders`, orderRouter);
 app.use(`/api/${version}/reviews`, reviewRouter);
 
+// Test route:
+app.get('/test', (req, res) => res.send('Test route works!'));
+
 // Handle Unimplemented routes:
 app.all('*', (req, res, next) =>
   next(new AppError(`Cannot find ${req.originalUrl}`, 404)),
