@@ -7,7 +7,6 @@ const FROM_NAME = 'Hour-Bank';
 const FROM_EMAIL = 'admin@hour-bank.com';
 
 const handleEmail = async (mailOptions) => {
-  console.log(1);
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: parseInt(process.env.EMAIL_PORT, 10),
@@ -16,9 +15,7 @@ const handleEmail = async (mailOptions) => {
       pass: process.env.EMAIL_PASSWORD,
     },
   });
-  console.log(2);
-  await transporter.sendMail(mailOptions);
-  console.log(3);
+  await transporter.sendMail(mailOptions); // Does not work in production
 };
 
 module.exports = async (receiver, subjectLine, message) => {
