@@ -15,7 +15,7 @@ const handleEmail = async (mailOptions) => {
       pass: process.env.EMAIL_PASSWORD,
     },
   });
-  await transporter.sendMail(mailOptions); // Does not work in production
+  await transporter.sendMail(mailOptions);
 };
 
 module.exports = async (receiver, subjectLine, message) => {
