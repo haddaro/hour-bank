@@ -1,23 +1,15 @@
-# hour-bank
-(Postman documentation: https://documenter.getpostman.com/view/30866950/2s9YeAAEaE)
+# Hour-Bank
 
-Description:
-Hour-Bank is an API for a bartering system that facilitates service exchanges between professionals. In this system, users can register as service providers in various categories. When a service is provided, the provider earns a credit hour, which they can then use to "purchase" services from other registered users. This creates a dynamic, community-driven exchange network where services are traded on an hour-for-hour basis. And most importantly: tax free!
+[**Postman Documentation**](https://documenter.getpostman.com/view/30866950/2s9YeAAEaE)
 
-Key Features:
-User Registration: Users can sign up as providers of different services.
-Service Transactions: Users can "buy" and "sell" service hours.
-Credit System: Earned credits can be used to avail services from other users.
-Reviews: After a transaction, users can leave reviews for the service received.
-Authentication & Authorization: Secure user authentication and authorization.
-Atomic Transactions: Ensures the integrity of credit exchanges.
-Error Handling: Emphasis on handling errors effectively for reliability.
+## Description
+Hour-Bank is an API for a bartering system that facilitates service exchanges between professionals. In this system, users can register as service providers in various categories. When a service is provided, the provider earns a credit hour, which can be used to "purchase" services from other registered users. This creates a dynamic, community-driven exchange network where services are traded on an hour-for-hour basis - and most importantly, it's tax-free!
 
-Technology Stack:
-Node.js: For building the backend application.
-Express: Web application framework for Node.js.
-MongoDB: NoSQL database for storing data.
-Mongoose: MongoDB object modeling for Node.js.
-
-* DB data is fictional.
-* E-mails are directed to my mailtrap.
+## Key Features
+- **User Registration:** Sign up as providers of different services.
+- **Service Transactions:** "Buy" and "sell" service hours.
+- **Credit System:** Use earned credits to avail services from other users.
+- **Reviews:** Leave reviews post-transaction for the service received.
+- **Authentication & Authorization:** Secure user authentication and authorization system.
+- **Atomic Transactions:** Ensure the integrity of credit exchanges.
+- **Error Handling:** Emphasize handling errors effectively for
